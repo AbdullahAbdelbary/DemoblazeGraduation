@@ -1,79 +1,103 @@
-package Pages;
+
+package pages;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.chrome.ChromeDriver;
+
 
 import java.time.Duration;
 import java.util.List;
+import java.util.NoSuchElementException;
 
-public class HomePage {
 
-    WebDriver driver;
-    WebDriverWait wait;
+public class HomePage extends BasePage {
+    private By phonesCategory = By.xpath("//a[contains(text(),'Phones')]");
+    private By laptopsCategory = By.xpath("//a[contains(text(),'Laptops')]");
+    private By monitorsCategory = By.xpath("//a[contains(text(),'Monitors')]");
+    private By allProducts = By.className("card-title");
+    private By nextButton = By.id("next2");
+    private By cartButton = By.id("cartur");
+    private By searchBox = By.id("searchBox");
 
-    // Locators
-    By logo = By.id("nava"); // Site logo
-    By homeButton = By.xpath("//*[@id=\"navbarExample\"]/ul/li[1]/a");
-    By productNames = By.cssSelector(".card-title a");
 
-    // Constructor
     public HomePage(WebDriver driver) {
-        this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        super(driver); // ✅ Fix: Only pass driver
     }
 
-    // Get all product names
-    public List<WebElement> getProductNames() {
-        return wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(productNames));
+
+
+    public void clickCategory(String category) {
+        By categoryLocator;
+
+        switch (category.toLowerCase()) {
+            case "phones":
+                categoryLocator = phonesCategory;
+                break;
+            case "laptops":
+                categoryLocator = laptopsCategory;
+                break;
+            case "monitors":
+                categoryLocator = monitorsCategory;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid category: " + category);
+        }
+
+        wait.until(ExpectedConditions.elementToBeClickable(categoryLocator)).click();
     }
 
-    // Click on a specific product to open details page
-    public void openProductDetails(String productName) {
-        for (WebElement product : getProductNames()) {
+    public List<WebElement> getProductList() {
+        return driver.findElements(allProducts);
+    }
+
+    public boolean isNextButtonPresent() {
+        return !driver.findElements(nextButton).isEmpty() && driver.findElement(nextButton).isDisplayed();
+    }
+
+    public void clickNextButton() {
+        if (isNextButtonPresent()) {
+            wait.until(ExpectedConditions.elementToBeClickable(nextButton)).click();
+        }
+    }
+
+    public void searchAndSelectProduct(String productName) {
+        WebElement searchInput = wait.until(ExpectedConditions.visibilityOfElementLocated(searchBox));
+        searchInput.clear();
+        searchInput.sendKeys(productName, Keys.RETURN);
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(allProducts));
+
+        List<WebElement> productResults = driver.findElements(allProducts);
+        for (WebElement product : productResults) {
             if (product.getText().equalsIgnoreCase(productName)) {
-                product.click();
+                wait.until(ExpectedConditions.elementToBeClickable(product)).click();
                 return;
             }
         }
-        throw new RuntimeException("Product not found: " + productName);
+
+        throw new NoSuchElementException("Product '" + productName + "' not found in search results!");
     }
 
-    // Click the Home button
-    public boolean clickHomeButton() {
-        driver.manage().window().maximize();
-        wait.until(ExpectedConditions.elementToBeClickable(homeButton)).click();
-        return false;
+    public void goToCart() {
+        wait.until(ExpectedConditions.elementToBeClickable(cartButton)).click();
     }
 
-    // Click the logo to go back to Home
-    public void clickLogo() {
-        driver.manage().window().maximize();
-        wait.until(ExpectedConditions.elementToBeClickable(logo)).click();
-    }
-
-    // Check if logo is displayed for testHomePageResponsive
-    public boolean isLogoDisplayed() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15)); // Increase timeout
-        try {
-            return wait.until(ExpectedConditions.visibilityOfElementLocated(logo)).isDisplayed();
-        } catch (TimeoutException e) {
-            System.out.println("Logo not found within timeout. Test might be failing due to viewport size.");
-            return false;
-        }
-    }
-
-    // Open the homepage
-    public void openHomePage() {
+    public void open() {
         driver.get("https://www.demoblaze.com/");
     }
 
-    // Verify if current URL is home page
-    public boolean isHomePage() {
-        String currentUrl = driver.getCurrentUrl();
-        return currentUrl.equals("https://www.demoblaze.com/") || currentUrl.equals("https://www.demoblaze.com/index.html");
+    public void selectProduct(String productName) {
+        By productLocator = By.xpath("//a[contains(text(),'" + productName + "')]");
+        wait.until(ExpectedConditions.elementToBeClickable(productLocator)).click();
+    }
+    public void clickCategories() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5)); // ✅ Wait for element to be clickable
+        WebElement categoriesButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("cat"))); // ✅ Ensure it is found
+        categoriesButton.click();
     }
 }
