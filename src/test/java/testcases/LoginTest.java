@@ -1,6 +1,6 @@
-package testcases;
+package TestCases;
 
-import pages.LoginPage;
+import Pages.LoginPage;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -10,7 +10,7 @@ public class LoginTest extends BaseTest {
 
     @Test(priority = 1)
     public void testValidLogin() {
-        LoginPage loginPage = new LoginPage(base_driver);
+        LoginPage loginPage = new LoginPage(baseDriver);
 
         loginPage.openLoginModal();
         loginPage.enterUsername("Maryam Ahmed");
@@ -22,7 +22,7 @@ public class LoginTest extends BaseTest {
 
     @Test(priority = 2)
     public void testLoginWithInvalidUsername() {
-        loginPage = new LoginPage(base_driver);
+        loginPage = new LoginPage(baseDriver);
         loginPage.openLoginModal();
         loginPage.enterUsername("non_existing_user");
         loginPage.enterPassword("mero");
@@ -51,7 +51,7 @@ public class LoginTest extends BaseTest {
 
     @Test(priority = 4)
     public void testLoginWithEmptyUsername() {
-        loginPage = new LoginPage(base_driver);
+        loginPage = new LoginPage(baseDriver);
         loginPage.openLoginModal(); // فتح النافذة تلقائيًا
         loginPage.enterUsername("");
         loginPage.enterPassword("mero");
@@ -62,7 +62,7 @@ public class LoginTest extends BaseTest {
 
     @Test(priority = 5)
     public void testLoginWithEmptyPassword() {
-        loginPage = new LoginPage(base_driver);
+        loginPage = new LoginPage(baseDriver);
 
 
         loginPage.openLoginModal();
