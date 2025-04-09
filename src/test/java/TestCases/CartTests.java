@@ -1,5 +1,6 @@
 package TestCases;
 
+import Pages.HomePageHeba;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -7,7 +8,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import pages.HomePage;
+import Pages.HomePage;
 
 import java.time.Duration;
 import java.util.HashSet;
@@ -25,23 +26,23 @@ public class CartTests extends BaseTest {
 
     @Test(priority = 1)
     public void testAddAllItemsToCartWithoutRepetition() throws InterruptedException {
-        HomePage homePage = new HomePage(driver);
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        HomePageHeba homePage = new HomePageHeba(baseDriver);
+        WebDriverWait wait = new WebDriverWait(baseDriver, Duration.ofSeconds(20));
 
         String[] categories = {"Phones", "Laptops", "Monitors"};
 
         for (String category : categories) {
-            homePage.clickCategory(category);
+            HomePageHeba.clickCategory(category);
             Thread.sleep(2000); // Ensure category page loads
 
-            List<WebElement> products = driver.findElements(By.className("card-title"));
+            List<WebElement> products = baseDriver.findElements(By.className("card-title"));
             if (products.isEmpty()) {
                 Assert.fail("No products found in category: " + category);
             }
 
             // ✅ Loop until all products in the category are added
             for (int i = 0; i < products.size(); i += 3) {
-                products = driver.findElements(By.className("card-title")); // Refresh elements after navigation
+                products = baseDriver.findElements(By.className("card-title")); // Refresh elements after navigation
                 WebElement product = products.get(i);
                 String productName = product.getText();
 
@@ -62,16 +63,16 @@ public class CartTests extends BaseTest {
                 expectedTotalPrice += productPrice;
 
                 // ✅ Click "Add to cart" and handle alert
-                driver.findElement(By.xpath("//a[text()='Add to cart']")).click();
+                baseDriver.findElement(By.xpath("//a[text()='Add to cart']")).click();
                 wait.until(ExpectedConditions.alertIsPresent());
-                driver.switchTo().alert().accept();
+                baseDriver.switchTo().alert().accept();
 
                 // ✅ Track added product to prevent repetition
                 addedProducts.add(productName);
                 System.out.println("✔ Added " + productName + " ($" + productPrice + ") to cart.");
 
                 // ✅ Click "PRODUCT STORE" home button instead of back navigation
-                WebElement homeButton = driver.findElement(By.id("nava"));
+                WebElement homeButton = baseDriver.findElement(By.id("nava"));
                 homeButton.click();
                 Thread.sleep(2000);
 
@@ -83,10 +84,10 @@ public class CartTests extends BaseTest {
 
     @Test(priority = 2, dependsOnMethods = "testAddAllItemsToCartWithoutRepetition")
     public void testVerifyCartItems() throws InterruptedException {
-        driver.findElement(By.id("cartur")).click();
+        baseDriver.findElement(By.id("cartur")).click();
         Thread.sleep(3000);
 
-        List<WebElement> cartRows = driver.findElements(By.xpath("//tbody/tr"));
+        List<WebElement> cartRows = baseDriver.findElements(By.xpath("//tbody/tr"));
         Assert.assertEquals(cartRows.size(), addedProducts.size(), "Not all products were added to the cart!");
 
         double actualTotalPrice = 0.0;
@@ -110,7 +111,7 @@ public class CartTests extends BaseTest {
 
     @Test(priority = 3, dependsOnMethods = "testVerifyCartItems")
     public void testVerifyTotalPrice() {
-        WebElement totalPriceElement = driver.findElement(By.id("totalp"));
+        WebElement totalPriceElement = baseDriver.findElement(By.id("totalp"));
         double displayedTotalPrice = Double.parseDouble(totalPriceElement.getText());
 
         Assert.assertEquals(displayedTotalPrice, expectedTotalPrice, "Displayed total price is incorrect!");
@@ -121,11 +122,11 @@ public class CartTests extends BaseTest {
     public void testDeleteItemsFromCart() throws InterruptedException {
         // ✅ Initialize `wait` if not already done
         if (wait == null) {
-            wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            wait = new WebDriverWait(baseDriver, Duration.ofSeconds(10));
         }
 
         while (true) {
-            List<WebElement> cartRows = driver.findElements(By.xpath("//tbody/tr"));
+            List<WebElement> cartRows = baseDriver.findElements(By.xpath("//tbody/tr"));
 
             if (cartRows.isEmpty()) {
                 System.out.println("✔ Cart is now empty.");
@@ -145,7 +146,7 @@ public class CartTests extends BaseTest {
             wait.until(ExpectedConditions.stalenessOf(lastRow));
 
             // ✅ Assert item is removed from cart
-            List<WebElement> updatedCartRows = driver.findElements(By.xpath("//tbody/tr"));
+            List<WebElement> updatedCartRows = baseDriver.findElements(By.xpath("//tbody/tr"));
             for (WebElement row : updatedCartRows) {
                 String remainingProduct = row.findElement(By.xpath(".//td[2]")).getText();
                 Assert.assertNotEquals(remainingProduct, deletedProductName, "Deleted product still exists in the cart!");
@@ -155,7 +156,7 @@ public class CartTests extends BaseTest {
         }
 
         // ✅ Final assertion to confirm cart is empty
-        Assert.assertTrue(driver.findElements(By.xpath("//tbody/tr")).isEmpty(), "Cart is not empty!");
+        Assert.assertTrue(baseDriver.findElements(By.xpath("//tbody/tr")).isEmpty(), "Cart is not empty!");
         System.out.println("✔ All items deleted successfully.");
     }
 }
