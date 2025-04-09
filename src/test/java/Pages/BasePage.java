@@ -1,4 +1,4 @@
-package pages;
+package Pages;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.JavascriptExecutor;
@@ -14,7 +14,7 @@ import java.time.Duration;
 
 public class BasePage {
     protected WebDriver driver;
-    protected WebDriverWait wait;
+    protected static WebDriverWait wait;
     protected JavascriptExecutor js;
     protected Actions actions;
 
