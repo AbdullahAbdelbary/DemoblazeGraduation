@@ -1,18 +1,18 @@
-package testcases;
+package TestCases;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import pages.SignupPage;
+import Pages.SignupPage;
 
 import java.time.Duration;
 
 public class SignupTestCase extends BaseTest {
     @Test
     public void testSignupWithValidCredentials() {
-        SignupPage signupPage = new SignupPage(driver);
+        SignupPage signupPage = new SignupPage(baseDriver);
 
 
         signupPage.openSignupModal();
@@ -30,7 +30,7 @@ public class SignupTestCase extends BaseTest {
 
     @Test
     public void testSignupWithExistingUsername() {
-        SignupPage signupPage = new SignupPage(driver);
+        SignupPage signupPage = new SignupPage(baseDriver);
 
 
         signupPage.openSignupModal();
@@ -47,7 +47,7 @@ public class SignupTestCase extends BaseTest {
 
     @Test
     public void testSignupWithEmptyFields() {
-        SignupPage signupPage = new SignupPage(driver);
+        SignupPage signupPage = new SignupPage(baseDriver);
 
 
         signupPage.openSignupModal();
@@ -62,11 +62,11 @@ public class SignupTestCase extends BaseTest {
 
     @Test
     public void testCloseSignupModalWithoutData() {
-        SignupPage signupPage = new SignupPage(driver);
+        SignupPage signupPage = new SignupPage(baseDriver);
         signupPage.openSignupModal();
 
         // إغلاق النافذة يدويًا (مثال باستخدام زر الإغلاق "X")
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebDriverWait wait = new WebDriverWait(baseDriver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#signInModal .btn-secondary"))).click();
 
         // التحقق من إغلاق النافذة
