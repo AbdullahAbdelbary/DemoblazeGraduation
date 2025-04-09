@@ -1,5 +1,6 @@
 package TestCases;
 
+import Pages.HomePageHeba;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -8,7 +9,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import pages.HomePage;
+import Pages.HomePage;
 
 import java.time.Duration;
 
@@ -17,18 +18,18 @@ import java.util.*;
 
 public class CategoryTests extends BaseTest {
 
-    private HomePage homePage;
+    private HomePageHeba homePage;
 
     @BeforeMethod
     public void setUp() {
-        driver = new ChromeDriver();
-        homePage = new HomePage(driver);
-        driver.get("https://www.demoblaze.com/");  // ✅ Opens Demoblaze before tests run
+        baseDriver = new ChromeDriver();
+        homePage = new HomePageHeba(baseDriver);
+        baseDriver.get("https://www.demoblaze.com/");  // ✅ Opens Demoblaze before tests run
     }
 
     @Test
     public void verifyCategoryPaginationAndProductCount() throws InterruptedException {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebDriverWait wait = new WebDriverWait(baseDriver, Duration.ofSeconds(5));
 
         String[] categories = {"Phones", "Laptops", "Monitors"};
         int totalCategoryProducts = 0;
@@ -77,7 +78,7 @@ public class CategoryTests extends BaseTest {
         totalCategoriesProductCount += products.size();
 
         // ✅ Check for Page 2 and Click "Next" ONLY ONCE
-        List<WebElement> nextButtons = driver.findElements(By.id("next2"));
+        List<WebElement> nextButtons = baseDriver.findElements(By.id("next2"));
         if (!nextButtons.isEmpty()) {
             System.out.println("➡️ Clicking Next for Categories (Page 2)");
             WebElement nextButton = nextButtons.get(0);
@@ -155,7 +156,7 @@ public class CategoryTests extends BaseTest {
 
         // Now test for Categories page
         try {
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            WebDriverWait wait = new WebDriverWait(baseDriver, Duration.ofSeconds(5));
             String[] categories = {"Phones", "Laptops", "Monitors", "Categories"};
 
             for (String category : categories) {
@@ -204,11 +205,11 @@ public class CategoryTests extends BaseTest {
 
     private boolean clickNextButton(WebDriverWait wait) {
         try {
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            Actions actions = new Actions(driver);
+            JavascriptExecutor js = (JavascriptExecutor) baseDriver;
+            Actions actions = new Actions(baseDriver);
 
             // ✅ Locate the Next button
-            List<WebElement> nextButtons = driver.findElements(By.id("next2"));
+            List<WebElement> nextButtons = baseDriver.findElements(By.id("next2"));
             if (nextButtons.isEmpty()) {
                 System.out.println("❌ No Next button found on this page.");
                 return false;
@@ -247,13 +248,13 @@ public class CategoryTests extends BaseTest {
      * Clicks the Previous button and verifies if it correctly returns to the first page.
      */
     private void clickPreviousButtonAndValidate(Set<String> firstPageProductNames, String category) throws InterruptedException {
-        List<WebElement> prevButtons = driver.findElements(By.id("prev2"));
+        List<WebElement> prevButtons = baseDriver.findElements(By.id("prev2"));
 
         if (!prevButtons.isEmpty()) {
             WebElement prevButton = prevButtons.get(0);
 
             // ✅ Scroll into view to avoid misclicking
-            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", prevButton);
+            ((JavascriptExecutor) baseDriver).executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", prevButton);
             Thread.sleep(2000);
 
             prevButton.click();
